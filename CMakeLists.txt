@@ -35,13 +35,13 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(Protractor main.c usb_descriptors.c)
+add_executable(Protractor src/main.c src/usb_descriptors.c)
 
 pico_set_program_name(Protractor "Protractor")
 pico_set_program_version(Protractor "0.1")
 
 # Generate PIO header
-pico_generate_pio_header(Protractor ${CMAKE_CURRENT_LIST_DIR}/encoder.pio)
+pico_generate_pio_header(Protractor ${CMAKE_CURRENT_LIST_DIR}/src/encoder.pio)
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(Protractor 0)
@@ -53,7 +53,7 @@ target_link_libraries(Protractor
 
 # Add the standard include files to the build
 target_include_directories(Protractor PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/src
 )
 
 # Add any user requested libraries

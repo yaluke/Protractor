@@ -34,7 +34,7 @@
 #include "usb_descriptors.h"
 
 #include "TM1637.h"
-#include "Encoder.h"
+#include "encoder.h"
 
 const uint RESET_BTN_PIN = 14;
 //--------------------------------------------------------------------+
