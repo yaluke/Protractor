@@ -23,16 +23,10 @@
  *
  */
 
-.program wait_raising_and_0
-    wait 1 pin 0
-    jmp pin end
-    irq wait 0
-end:
-    wait 0 pin 0
-
-.program wait_raising_and_1
+.program wait_raising
     wait 1 pin 0
     jmp pin inc
+    irq wait 0
     jmp end
 inc:
     irq wait 1
@@ -41,32 +35,23 @@ end:
 
 % c-sdk {
 #include "hardware/clocks.h"
-static inline void encoder_program_init(PIO pio, uint sm_0, uint sm_1, uint offset_0, uint offset_1, uint pin0, uint pin1, float freq)
+static inline void encoder_program_init(PIO pio, uint sm_0, uint offset_0, uint pin0, uint pin1, float freq)
 {
-    pio_sm_config c_0 = wait_raising_and_0_program_get_default_config(offset_0);
+    pio_sm_config c_0 = wait_raising_program_get_default_config(offset_0);
 
     sm_config_set_in_pins(&c_0, pin0);
     sm_config_set_jmp_pin(&c_0, pin1);
-
-    pio_sm_config c_1 = wait_raising_and_1_program_get_default_config(offset_1);
-
-    sm_config_set_in_pins(&c_1, pin0);
-    sm_config_set_jmp_pin(&c_1, pin1);
 
     pio_gpio_init(pio, pin0);
     pio_gpio_init(pio, pin1);
 
     pio_sm_set_consecutive_pindirs(pio, sm_0, pin0, 2, false);
-    pio_sm_set_consecutive_pindirs(pio, sm_1, pin0, 2, false);
 
     float div = clock_get_hz(clk_sys) / freq;
     sm_config_set_clkdiv(&c_0, div);
-    sm_config_set_clkdiv(&c_1, div);
 
     pio_sm_init(pio, sm_0, offset_0, &c_0);
-    pio_sm_init(pio, sm_1, offset_1, &c_1);
 
     pio_sm_set_enabled(pio, sm_0, true);
-    pio_sm_set_enabled(pio, sm_1, true);
 }
 %}

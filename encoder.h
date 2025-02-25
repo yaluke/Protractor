@@ -52,12 +52,10 @@ void Encoder_init(uint pin0, uint pin1, uint freq)
     Encoder_freq = freq;
     Encoder_pio0 = pio0;
 
-    uint offset_0 = pio_add_program(Encoder_pio0, &wait_raising_and_0_program);
-    uint offset_1 = pio_add_program(Encoder_pio0, &wait_raising_and_1_program);
+    uint offset_0 = pio_add_program(Encoder_pio0, &wait_raising_program);
     Encoder_sm0 = pio_claim_unused_sm(Encoder_pio0, true);
-    Encoder_sm1 = pio_claim_unused_sm(Encoder_pio0, true);
 
-    encoder_program_init(Encoder_pio0, Encoder_sm0, Encoder_sm1, offset_0, offset_1, Encoder_pin0, Encoder_pin1, Encoder_freq);
+    encoder_program_init(Encoder_pio0, Encoder_sm0, /*Encoder_sm1,*/ offset_0, /*offset_1,*/ Encoder_pin0, Encoder_pin1, Encoder_freq);
 
     pio_set_irq0_source_enabled(Encoder_pio0, pis_interrupt0, true);
     pio_set_irq1_source_enabled(Encoder_pio0, pis_interrupt1, true);
