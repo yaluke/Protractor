@@ -1,6 +1,7 @@
-Protractor is a device which measure rotation angle and send that measurement via USB to the host. It uses precise encoder to measure angle with 1 degree precision, Raspberry Pi Pico to read the encoder signal with high speed using PIO, and TinyUSB library to share the measurement with the host. Main reason for building Protractor was a need to precisely measure rotation angle of a physical steering wheel used in car driving simulation.
+The Protractor is a specialized device designed to measure rotation angles with high precision and transmit these measurements via USB to a host computer. It incorporates a precise encoder capable of measuring angles with a 1-degree precision. The Raspberry Pi Pico is used to read the encoder signal at high speed through Programmable I/O (PIO), while the TinyUSB library facilitates data sharing with the host. The Protractor was developed primarily to address the need for precise measurement of the rotation angle of a physical steering wheel in car driving simulations.
 
-More info: https://hackaday.io/project/202539-protractor
+https://www.hackster.io/luke35/protractor-e2c351
+https://hackaday.io/project/202539-protractor
 
 ## Hardware components
 
@@ -13,13 +14,13 @@ More info: https://hackaday.io/project/202539-protractor
 
 ## Software Stack
 
-To provide required functionality, platform need to support fast I/O, and easy USB handling. First experiments with direct GPIO usage for reading encoder signals shown that signal from the encoder can be partially lost when rotating quickly as direct GPIO can handle changes up to ~10kHz. Much better and faster option is to use Programmable Input Output (PIO) functionality available on Raspberry Pi Pico.
+To provide the required functionality, the platform needed to support fast I/O and easy USB handling. Initial experiments with direct GPIO usage for reading encoder signals showed that signals could be partially lost during rapid rotation, as direct GPIO can only handle changes up to ~10kHz. A much better and faster option was to use the Programmable Input/Output (PIO) functionality available on the Raspberry Pi Pico.
 
-Initially I planned to use the simplest software option - MicroPython, but it has no direct support for USB functionality. Circuit Python was the second candidate, but it has no full PIO support. Finally I chose C++ as it has good USB support for RPi Pico (TinyUSB library) as well as PIO.
+Initially, I planned to use the simplest software option - MicroPython, but it lacked direct support for USB functionality. CircuitPython was the second candidate, but it didn't have full PIO support. Finally, I chose C++ as it offers good USB support for the Raspberry Pi Pico (TinyUSB library) as well as PIO capabilities.
 
-I based the implementation on hid_composite example from TinyUSB library and removed all the sub-devices from implementation except generic inout device. I’ve also added the code with simple class handling TM1637 based display and Encoder C++ class with PIO custom code, handling encoder signals.
+I based the implementation on the hid_composite example from the TinyUSB library and removed all sub-devices from the implementation except for the generic input/output device. I completed the code with a simple class handling the TM1637-based display and an Encoder C++ class with custom PIO code for handling encoder signals.
 
-As an IDE I’ve used Microsoft Visual Code with official Raspberry Pi Pico extension (on MacOS and Windows).
+For development, I used Microsoft Visual Studio Code with the official Raspberry Pi Pico extension (on both macOS and Windows).
 
 List of components:
 * Visual Studio Code (https://code.visualstudio.com/)
@@ -29,15 +30,15 @@ List of components:
 
 ## Encoder Signal Processing
 
-Encoder generates two-phase orthogonal pulse signal, 400 pulses per rotation for each phase. Decoding of this signal is made by PIO program (file encoder.pio) waiting for raising edge on channel A, and then check the value on channel B: for 0 IRQ 0 is generated, for 1 IRQ 1 is generated.  Interrupts are handled by Encoder C class: IRQ 0 means decreasing rotation counter, IRQ 1 - increasing. This configuration generates 400 impulses per rotation and counter value needs to be multiplied by 360/400 = 0.9 to represent value in degrees.
+The encoder generates a two-phase orthogonal pulse signal, with 400 pulses per rotation for each phase. Decoding of this signal is performed by a PIO program (in the file encoder.pio) that waits for a rising edge on channel A, and then checks the value on channel B: for 0, IRQ 0 is generated; for 1, IRQ 1 is generated. These interrupts are handled by the Encoder C++ class: IRQ 0 decreases the rotation counter, while IRQ 1 increases it. This configuration generates 400 impulses per rotation, and the counter value needs to be multiplied by 360/400 = 0.9 to represent the value in degrees.
 
-Precision of the measurement can be increased to 1600 pulses per rotation by adding 3 more PIO programs waiting for falling edge on channel A, waiting for raising edge on channel B, and waiting for falling edge on channel B.
+The precision of the measurement can be increased to 1600 pulses per rotation by adding three more PIO programs: one waiting for the falling edge on channel A, another waiting for the rising edge on channel B, and a third waiting for the falling edge on channel B.
 
 ## USB Communication
 
-USB handling implementation is based on hid_composite example from TinyUSB library. All device types except generic inout devices were removed from the original code. 
-
-Implementation can be tested on host device using two examples from tests directory: test_hid.py using hid library (https://pypi.org/project/hid/), and test_pyusb.py using pyusb library (https://pypi.org/project/pyusb/).
+The USB handling implementation is based on the hid_composite example from the TinyUSB library. All device types except generic input/output devices were removed from the original code. The implementation can be tested on a host device using two examples from the tests directory:
+* test_hid.py, which uses the hid library (https://pypi.org/project/hid/)
+* test_pyusb.py, which uses the pyusb library (https://pypi.org/project/pyusb/)
 
 ## Build Instructions
 
@@ -61,4 +62,4 @@ Reset switch <-> RPi Pico
 
 ### Case
 
-Simple device case and plug-in case designed in OpenSCAD are available in case directory.
+Simple device case and plug-in case, designed in OpenSCAD, are available in case directory on GitHub.
