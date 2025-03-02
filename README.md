@@ -1,6 +1,7 @@
 The Protractor is a specialized device designed to measure rotation angles with high precision and transmit these measurements via USB to a host computer. It incorporates a precise encoder capable of measuring angles with a 1-degree precision. The Raspberry Pi Pico is used to read the encoder signal at high speed through Programmable I/O (PIO), while the TinyUSB library facilitates data sharing with the host. The Protractor was developed primarily to address the need for precise measurement of the rotation angle of a physical steering wheel in car driving simulations.
 
 https://www.hackster.io/luke35/protractor-e2c351
+
 https://hackaday.io/project/202539-protractor
 
 ## Hardware components
